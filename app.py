@@ -7,13 +7,17 @@ from lxml import etree
 
 app = Flask(__name__, static_folder='templates')
 
+@app.route('/')
+def index():
+    return redirect(url_for('cadastro_usuario'))
+
 # rota para a página de cadastro de usuário
-@app.route('/cadastro_usuario')
+@app.route('/cadastro_usuario', methods=['GET', 'POST'])
 def cadastro_usuario():
     return render_template('cadastro_usuario.html')
 
 # rota para processar o formulário de cadastro de usuário
-@app.route('/cadastrar', methods=['POST'])
+@app.route('/cadastrar', methods=['GET', 'POST'])
 def cadastrar():
     if request.method == 'POST':
 
@@ -48,10 +52,6 @@ def cadastrar():
             print("Falha ao inserir os dados do usuário: {}".format(error))
             return "Erro ao inserir os dados do usuário"
 
-@app.route('/')
-def index():
-    return redirect(url_for('cadastro_usuario'))
-        
 if __name__ == '__main__':
     app.run(debug=True)
     
