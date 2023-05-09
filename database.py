@@ -378,6 +378,6 @@ def get_produtositens():
 
 def get_produtos_by_termo(termo):
     with mysql.connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM produto WHERE DESCRICAO LIKE %s ORDER BY DESCRICAO ASC", ('%' + termo + '%',))
+        cursor.execute('SELECT ID, DESCRICAO FROM produto WHERE DESCRICAO LIKE %s', ('%' + termo + '%',))
         produtos = cursor.fetchall()
     return produtos

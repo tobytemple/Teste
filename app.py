@@ -453,15 +453,13 @@ def excluir_listadecompras_route(id):
 
 @app.route('/produtositens')
 def produtositens():
-    termo = request.args.get('termo')
-    if termo:
-        produtos = get_produtos_by_termo(termo)
-    else:
-        produtos = []
-
-    return jsonify([{'id': p[0], 'text': p[1]} for p in produtos])
-
-
+    print('1')
+    termo_pesquisa = request.args.get('q', '')
+    produtos = get_produtos_by_termo(termo_pesquisa)
+    resultados = []
+    for produto in produtos:
+        resultados.append({'id': produto[0], 'text': produto[1]})
+    return jsonify({'results': resultados})
 
 if __name__ == '__main__':
     app.run(debug=True) 

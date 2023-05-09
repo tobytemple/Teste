@@ -15,8 +15,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/js/select2.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet" />
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+
 
     <style>
         .table-actions {
@@ -231,8 +250,9 @@
                             <div class="row g-3">
                                 <div class="col-sm-12">
                                     <label for="product-input" class="form-label">Produto</label>
-                                    <select id="product-input" name="item" class="form-control" required>
-                                        <option value="">Selecione um produto</option>
+                                    <select name="item" class="form-control" id="product-input" data-toggle="select2"
+                                        required>
+                                        <option value="" disabled selected>Selecione um produto</option>
                                     </select>
                                     <div class="invalid-feedback">Produto é obrigatório</div>
                                 </div>
@@ -302,15 +322,7 @@
     </div>
 
     <!-- Links JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
+
 
     <script>
         var botaoIncluir = document.getElementById("botao-incluir");
@@ -347,15 +359,13 @@
 
         $(document).ready(function () {
             $('#product-input').select2({
-                placeholder: 'Selecione um produto',
-                minimumInputLength: 2,
                 ajax: {
                     url: '/produtositens',
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
                         return {
-                            termo: params.term
+                            q: params.term // termo de pesquisa
                         };
                     },
                     processResults: function (data) {
@@ -364,7 +374,8 @@
                         };
                     },
                     cache: true
-                }
+                },
+                minimumInputLength: 2 // mínimo de caracteres para iniciar a pesquisa
             });
         });
 
