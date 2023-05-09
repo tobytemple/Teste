@@ -355,7 +355,7 @@
 
         });
 
-        $(document).ready(function () {
+        $(document).on('ready', function () {
             $('#product-input').select2({
                 ajax: {
                     url: '/produtositens',
@@ -368,7 +368,7 @@
                     },
                     processResults: function (data) {
                         return {
-                            results: data
+                            results: data.results
                         };
                     },
                     cache: true
