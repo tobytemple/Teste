@@ -369,3 +369,9 @@ def cadastrar_itenslistadecompras(id_listadecompras, id_produto, quantidade, val
     with mysql.connection.cursor() as cursor:
         cursor.execute('INSERT INTO itenslistadecompras (id_listadecompras, id_produto, quantidade, valorproduto) VALUES (%s,%s,%s,%s)', (id_listadecompras, id_produto, quantidade, valorproduto))
         mysql.connection.commit()
+
+def get_produtositens():
+    with mysql.connection.cursor() as cursor:
+        cursor.execute('SELECT DESCRICAO FROM produto')
+        produtos = [produto[0] for produto in cursor.fetchall()]
+    return produtos

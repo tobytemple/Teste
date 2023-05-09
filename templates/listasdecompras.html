@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
     <style>
         .table-actions {
             width: 120px;
@@ -227,10 +230,10 @@
                         <form method="POST" class="needs-validation" novalidate>
                             <div class="row g-3">
                                 <div class="col-sm-12">
-                                    <label for="firstName" class="form-label">Produto</label>
-                                    <input type="text" name="item" class="form-control" id="product-input"
-                                        placeholder="" value="" required>
-                                    <ul id="products-list" class="list-group"></ul>
+                                    <label for="product-input" class="form-label">Produto</label>
+                                    <select id="product-input" name="item" class="form-control" required>
+                                        <option value="">Selecione um produto</option>
+                                    </select>
                                     <div class="invalid-feedback">Produto é obrigatório</div>
                                 </div>
                             </div>
@@ -341,6 +344,29 @@
             }).show();
 
         });
+
+        $(document).ready(function () {
+            $('#product-input').select2({
+                ajax: {
+                    url: '/produtositens',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term // termo de pesquisa
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2 // mínimo de caracteres para iniciar a pesquisa
+            });
+        });
+
 
     </script>
 

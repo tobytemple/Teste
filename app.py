@@ -12,7 +12,7 @@ from database import (mysql,
                       get_estabelecimentos, get_cidades, get_estabelecimento_por_id, cadastrar_estabelecimento, editar_estabelecimento, excluir_estabelecimento,
                       get_formasdepagamento, get_formadepagamento_por_id, cadastrar_formadepagamento, editar_formadepagamento, excluir_formadepagamento,
                       get_listasdecompras, get_listadecompras_por_id, cadastrar_listadecompras, editar_listadecompras, excluir_listadecompras,
-                      get_itenslistadecompras_por_id_listadecompras, cadastrar_itenslistadecompras)
+                      get_itenslistadecompras_por_id_listadecompras, cadastrar_itenslistadecompras, get_produtositens)
 
 app = Flask(__name__)
 
@@ -450,6 +450,12 @@ def editar_listadecompras_route(id):
 def excluir_listadecompras_route(id):
     excluir_listadecompras(id)    
     return redirect(url_for('listar_listasdecompras'))
+
+@app.route("/produtositens")
+def listar_produtos_itens():
+    produtos = get_produtositens()
+    return jsonify(produtos)
+
 
 if __name__ == '__main__':
     app.run(debug=True) 
