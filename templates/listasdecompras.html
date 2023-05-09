@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Listas de Compras</title>
+
+    <!-- Link to Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Link to Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        .table-actions {
+            width: 120px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{{ url_for('home') }}">Control Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('listar_categorias') }}">Categorias</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('listar_subcategorias') }}">SubCategorias</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('listar_unidadesdemedida') }}">Unidades de Medida</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('listar_locaisdacasa') }}">Locais Casa</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('listar_produtos') }}">Produtos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('listar_estabelecimentos') }}">Estabelecimentos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('listar_formasdepagamento') }}">Formas de Pagamento</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ url_for('listar_listasdecompras') }}">Listas de Compras</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row g-5" id="div-listar">
+            <div class="col-md-12">
+                {% if not item_edit %}
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-primary">Listas de Compras</span>
+                    <span class="badge bg-primary rounded-pill">{{ total_items }}</span>
+                </h4>
+                <button type="button" class="btn btn-link" id="botao-incluir">+</button>
+                {% endif %}
+                {% if listasdecompras %}
+                <br>
+                <input type="text" class="form-control" id="input-pesquisa" placeholder="Pesquisa por descrição">
+                <br>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Descricao</th>
+                            <th scope="col">Estabelecimento</th>
+                            <th scope="col">Data Compra</th>
+                            <th scope="col">Valor Compra</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for listadecompras in listasdecompras %}
+                        <tr>
+                            <td>{{ listadecompras.ID }}</td>
+                            <td>{{ listadecompras.DESCRICAO }}</td>
+                            <td>{{ listadecompras.ESTABELECIMENTO }}</td>
+                            <td>{{ listadecompras.DATACOMPRA }}</td>
+                            <td>{{ listadecompras.VALORCOMPRA }}</td>
+                            <td class="align-items-end mb-lg-5">
+                                <form action="/listasdecompras/{{ listadecompras.ID }}/editar" method="GET">
+                                    <button type="submit" class="btn btn-primary btn-sm">Editar</button>
+                                </form>
+                            </td>
+                            <td class="align-items-end mb-3">
+                                <form action="/listasdecompras/{{ listadecompras.ID }}/excluir" method="POST">
+                                    <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row g-5" style="display: none;" id="div-incluir">
+            <div class="col-md-12">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-primary">Nova lista de compras</span>
+                </h4>
+            </div>
+            <div class="col-md-5">
+                <form method="POST" action="{{ url_for('cadastrar_listadecompras_route') }}" id="form_novo">
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Descrição</label>
+                        <input type="text" class="form-control" id="descricao" name="descricao" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estabelecimento" class="form-label">Estabelecimento</label>
+                        <select class="form-control" id="estabelecimento" name="estabelecimento" required>
+                            {% for estabelecimento in estabelecimentos %}
+                            <option value="{{ estabelecimento.ID }}">{{ estabelecimento.NOME }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nrocupomfiscal" class="form-label">Nro Cupom Fiscal</label>
+                        <input type="text" class="form-control" id="nrocupomfiscal" name="nrocupomfiscal" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="datacompra" class="form-label">Data Compra</label>
+                        <input type="text" class="form-control" id="datacompra" name="datacompra" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="valorcompra" class="form-label">Valor Compra</label>
+                        <input type="text" class="form-control" id="valorcompra" name="valorcompra" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="formadepagamento" class="form-label">Forma de Pagamento</label>
+                        <select class="form-control" id="formadepagamento" name="formadepagamento" required>
+                            {% for formadepagamento in formasdepagamento %}
+                            <option value="{{ formadepagamento.ID }}">{{ formadepagamento.DESCRICAO }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                    <button type="submit" class="btn btn-danger" id="botao-cancelar">Cancelar</button>
+                </form>
+            </div>
+        </div>
+
+        {% if item_edit %}
+        <div id="div-alterar">
+            <div class="row g-5">
+                <div class="col-md-12">
+                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-primary">Alterar lista de compras</span>
+                    </h4>
+                </div>
+            </div>
+            <form method="POST">
+                <div class="row g-5">
+                    <div class="col-md-5">
+                        <label for="descricao" class="form-label">Descrição</label>
+                        <input type="text" name="descricao_edit" id="descricao_edit" class="form-control"
+                            value="{{ item_edit['descricao'] }}" required>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="estabelecimento" class="form-label">Estabelecimento</label>
+                        <select class="form-control" id="estabelecimento_edit" name="estabelecimento_edit" required>
+                            {% for estabelecimento in estabelecimentos %}
+                            {% if estabelecimento.ID == item_edit['estabelecimento'] %}
+                            <option value="{{ estabelecimento.ID }}" selected>{{ estabelecimento.NOME }}</option>
+                            {% else %}
+                            <option value="{{ estabelecimento.ID }}">{{ estabelecimento.NOME }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <p></p>
+                <div class="row g-5">
+                    <div class="col-md-5">
+                        <label for="nrocupomfiscal" class="form-label">Nro Cupom Fiscal</label>
+                        <input type="text" name="nrocupomfiscal_edit" id="nrocupomfiscal_edit" class="form-control"
+                            value="{{ item_edit['nrocupomfiscal'] }}" required>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="datacompra" class="form-label">Data Compra</label>
+                        <input type="text" name="datacompra_edit" id="datacompra_edit" class="form-control"
+                            value="{{ item_edit['datacompra'] }}" required>
+                    </div>
+                </div>
+                <p></p>
+                <div class="row g-5">
+                    <div class="col-md-5">
+                        <label for="valorcompra" class="form-label">Valor Compra</label>
+                        <input type="text" name="valorcompra_edit" id="valorcompra_edit" class="form-control"
+                            value="{{ item_edit['valorcompra'] }}" required>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="formadepagamento" class="form-label">Forma de Pagamento</label>
+                        <select class="form-control" id="formadepagamento_edit" name="formadepagamento_edit" required>
+                            {% for formadepagamento in formasdepagamento %}
+                            {% if formadepagamento.ID == item_edit['formadepagamento'] %}
+                            <option value="{{ formadepagamento.ID }}" selected>{{ formadepagamento.DESCRICAO }}</option>
+                            {% else %}
+                            <option value="{{ formadepagamento.ID }}">{{ formadepagamento.DESCRICAO }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <p></p>
+                <div class="row g-5">
+                    <div class="col-md-5">
+                        <h4 class="mb-3">Incluir produto na lista</h4>
+                        <form method="POST" class="needs-validation" novalidate>
+                            <div class="row g-3">
+                                <div class="col-sm-12">
+                                    <label for="firstName" class="form-label">Produto</label>
+                                    <input type="text" name="item" class="form-control" id="product-input"
+                                        placeholder="" value="" required>
+                                    <ul id="products-list" class="list-group"></ul>
+                                    <div class="invalid-feedback">Produto é obrigatório</div>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <label for="lastName" class="form-label">Quantidade</label>
+                                    <input type="text" name="quantity" class="form-control" placeholder="" value=""
+                                        required>
+                                    <div class="invalid-feedback">Quantidade é obrigatória.</div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="lastName" class="form-label">Valor</label>
+                                    <input type="text" name="valor" class="form-control" placeholder="" value="">
+                                </div>
+                            </div>
+                            <hr class="my-4">
+                            <button class="w-100 btn btn-primary btn-lg" type="submit">Adicionar Produto</button>
+                            <p></p>
+                    </div>
+                    {% if itenslistadecompras %}
+                    <div class="col-md-5 col-lg-5 order-md-last">
+                        <h4 class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-primary">Itens da lista</span>
+                            <span class="badge bg-primary rounded-pill">{{ total_items }}</span>
+                        </h4>
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Produto</th>
+                                    <th scope="col">QTD</th>
+                                    <th scope="col">Valor</th>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in itenslistadecompras %}
+                                <tr>
+                                    <td align="center">{{ item['PRODUTO'] }}</td>
+                                    <td align="center">{{ item['QUANTIDADE'] }}</td>
+                                    <td align="center">{{ item['VALORPRODUTO'] }}</td>
+                                    <td>
+                                        <form method="GET" action="{{ url_for('edit_item', item_id=item['id']) }}">
+                                            <button class="btn btn-primary btn-sm">Editar</button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form method="GET" action="{{ url_for('delete_item', item_id=item['id']) }}">
+                                            <button class="btn btn-primary btn-sm">Excluir</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a class="btn btn-danger" href="{{ url_for('listar_listasdecompras') }}">Cancelar</a>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+    </div>
+
+    <!-- Links JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+    <script>
+        var botaoIncluir = document.getElementById("botao-incluir");
+        var botaoCancelar = document.getElementById("botao-cancelar");
+        var divIncluir = document.getElementById("div-incluir");
+        var divListar = document.getElementById("div-listar");
+
+        botaoIncluir.addEventListener("click", function () {
+            divListar.style.display = "none"
+            divIncluir.style.display = "block";
+            botaoIncluir.style.display = "none"
+        });
+
+        botaoCancelar.addEventListener("click", function () {
+            divListar.style.display = "block"
+            divIncluir.style.display = "none";
+            botaoIncluir.style.display = "block"
+        });
+
+        $("#input-pesquisa").on("keyup", function () {
+            // Executa a pesquisa
+            var valorPesquisa = $(this).val().toLowerCase();
+            $("table tbody tr").filter(function () {
+                var descricao = $(this).find("td:eq(1)").text().toLowerCase();
+                return !descricao.includes(valorPesquisa);
+            }).hide();
+
+            $("table tbody tr").filter(function () {
+                var descricao = $(this).find("td:eq(1)").text().toLowerCase();
+                return descricao.includes(valorPesquisa);
+            }).show();
+
+        });
+
+    </script>
+
+</body>
+
+</html>
