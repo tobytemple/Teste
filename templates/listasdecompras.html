@@ -15,8 +15,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/js/select2.min.js"></script>
 
     <style>
         .table-actions {
@@ -347,13 +347,15 @@
 
         $(document).ready(function () {
             $('#product-input').select2({
+                placeholder: 'Selecione um produto',
+                minimumInputLength: 2,
                 ajax: {
                     url: '/produtositens',
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
                         return {
-                            q: params.term // termo de pesquisa
+                            termo: params.term
                         };
                     },
                     processResults: function (data) {
@@ -362,11 +364,9 @@
                         };
                     },
                     cache: true
-                },
-                minimumInputLength: 2 // mínimo de caracteres para iniciar a pesquisa
+                }
             });
         });
-
 
     </script>
 
