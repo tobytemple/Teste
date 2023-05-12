@@ -373,11 +373,10 @@ def cadastrar_itenslistadecompras(id_listadecompras, id_produto, quantidade, val
 def get_produtositens():
     with mysql.connection.cursor() as cursor:
         cursor.execute('SELECT DESCRICAO FROM produto')
-        produtos = [produto[0] for produto in cursor.fetchall()]
-    return produtos
+        result = cursor.fetchall()
 
-def get_produtos_by_termo(termo):
-    with mysql.connection.cursor() as cursor:
-        cursor.execute('SELECT ID, DESCRICAO FROM produto WHERE DESCRICAO LIKE %s', ('%' + termo + '%',))
-        produtos = cursor.fetchall()
-    return produtos
+        products = []
+        if len(result) > 0:
+            products = [row['DESCRICAO'] for row in result]
+
+    return products

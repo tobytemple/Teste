@@ -12,7 +12,7 @@ from database import (mysql,
                       get_estabelecimentos, get_cidades, get_estabelecimento_por_id, cadastrar_estabelecimento, editar_estabelecimento, excluir_estabelecimento,
                       get_formasdepagamento, get_formadepagamento_por_id, cadastrar_formadepagamento, editar_formadepagamento, excluir_formadepagamento,
                       get_listasdecompras, get_listadecompras_por_id, cadastrar_listadecompras, editar_listadecompras, excluir_listadecompras,
-                      get_itenslistadecompras_por_id_listadecompras, cadastrar_itenslistadecompras, get_produtositens, get_produtos_by_termo)
+                      get_itenslistadecompras_por_id_listadecompras, cadastrar_itenslistadecompras, get_produtositens)
 
 app = Flask(__name__)
 
@@ -91,7 +91,6 @@ def cadastrar_usuario_route():
 # Rota para editar usuarios no banco de dados
 @app.route('/usuarios/<int:id>/editar', methods=['GET', 'POST'])
 def editar_usuario_route(id):
-    print('Teste')
     if request.method == 'GET':
         # Busca o perfil com o id informado no banco de dados
         usuario = get_usuario_por_id(id)
@@ -451,15 +450,18 @@ def excluir_listadecompras_route(id):
     excluir_listadecompras(id)    
     return redirect(url_for('listar_listasdecompras'))
 
-@app.route('/produtositens')
-def produtositens():
-    print('1')
-    termo_pesquisa = request.args.get('q', '')
-    produtos = get_produtos_by_termo(termo_pesquisa)
-    resultados = []
-    for produto in produtos:
-        resultados.append({'id': produto[0], 'text': produto[1]})
-    return jsonify({'results': resultados})
+@app.route('/products')
+def get_products():
+    search = request.args.get('search')
+    products = get_produtositens()
+    print(products)
+    
+    # Filtragem de produtos de acordo com o termo de busca
+    if search:
+        filtered_products = [product for product in products if search.lower() in product.lower()]
+        return jsonify(filtered_products)
+    else:
+        return jsonify(products)
 
 if __name__ == '__main__':
     app.run(debug=True) 

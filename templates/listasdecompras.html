@@ -1,10 +1,7 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Listas de Compras</title>
 
     <!-- Link to Bootstrap CSS -->
@@ -15,25 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet" />
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
-
-
 
     <style>
         .table-actions {
@@ -81,6 +60,11 @@
     </nav>
 
     <div class="container mt-4">
+        <label for="firstName" class="form-label">Produto</label>
+                                    <input type="text" name="item" class="form-control" id="product-input"
+                                        placeholder="" value="" required>
+                                    <ul id="products-list" class="list-group"></ul>
+                                    <div class="invalid-feedback">Produto é obrigatório</div>
         <div class="row g-5" id="div-listar">
             <div class="col-md-12">
                 {% if not item_edit %}
@@ -247,11 +231,10 @@
                         <form method="POST" class="needs-validation" novalidate>
                             <div class="row g-3">
                                 <div class="col-sm-12">
-                                    <label for="product-input" class="form-label">Produto</label>
-                                    <select name="item" class="form-control" id="product-input" data-toggle="select2"
-                                        required>
-                                        <option value="" disabled selected>Selecione um produto</option>
-                                    </select>
+                                    <label for="produto" class="form-label">Produto</label>
+                                    <input type="text" name="item2" class="form-control" id="product-input2"
+                                        placeholder="" value="" required>
+                                    <ul id="products-list2" class="list-group"></ul>
                                     <div class="invalid-feedback">Produto é obrigatório</div>
                                 </div>
                             </div>
@@ -355,25 +338,40 @@
 
         });
 
-        $(document).on('ready', function () {
-            $('#product-input').select2({
-                ajax: {
-                    url: '/produtositens',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            q: params.term // termo de pesquisa
-                        };
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: data.results
-                        };
-                    },
-                    cache: true
-                },
-                minimumInputLength: 2 // mínimo de caracteres para iniciar a pesquisa
+        $(document).ready(function () {
+            function updateProductsList(products) {
+                var $list = $('ul#products-list2');
+                $list.empty();
+                $.each(products, function (i, product) {
+                    var $li = $('<li>').text(product).addClass('list-group-item');
+                    $li.click(function () {
+                        $('input#product-input2').val(product);
+                        $list.empty();
+                    });
+                    $list.append($li);
+                });
+            }
+
+            // Função para buscar a lista de produtos correspondentes ao valor do campo de entrada
+            function searchProducts(search) {
+                if (search === '') {
+                    updateProductsList([]);
+                    return;
+                }
+
+                $.get('/products', { 'search': search }, function (data) {
+                    updateProductsList(data);
+                });
+            }
+
+            function selectProduct(product) {
+                $('#product-input2').val(product);
+            }
+
+            // Configuração do campo de entrada para autocomplete
+            var $input = $('input#product-input2');
+            $input.on('input', function () {
+                searchProducts($(this).val());
             });
         });
 
