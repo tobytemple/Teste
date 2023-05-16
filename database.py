@@ -357,26 +357,45 @@ def excluir_listadecompras(id):
 # função para buscar itens da lista de compras no banco
 def get_itenslistadecompras_por_id_listadecompras(id_listadecompras):
     with mysql.connection.cursor() as cursor:
-        cursor.execute('SELECT ILC.ID_ListadeCompras, ILC.ID_Produto, P.DESCRICAO AS PRODUTO, ILC.QUANTIDADE, ILC.VALORPRODUTO '
+        cursor.execute('SELECT ILC.ID_ListadeCompras AS ID_LISTA, ILC.ID_Produto AS ID_PRODUTO, P.DESCRICAO AS PRODUTO, ILC.QUANTIDADE, ILC.VALORPRODUTO '
                        'FROM itenslistadecompras ILC '
                        'INNER JOIN produto P ON ILC.ID_Produto = P.ID '
                        ' WHERE ILC.ID_ListadeCompras = %s ORDER BY P.DESCRICAO DESC', (id_listadecompras,))
-        itenslistasdecompras = cursor.fetchall()
-    return itenslistasdecompras
+        itenslistadecompras = cursor.fetchall()
+    return itenslistadecompras
+
+# função para buscar um item da lista de compras específica
+def get_itemlistadecompras_por_ids(id_lista, id_produto):
+    with mysql.connection.cursor() as cursor:
+        cursor.execute('SELECT ILC.ID_ListadeCompras AS ID_LISTA, ILC.ID_PRODUTO, ILC.QUANTIDADE, ILC.VALORPRODUTO FROM itenslistadecompras ILC WHERE ID_ListadeCompras=%s AND ID_Produto=%s', (id_lista,id_produto,))
+        itemlistadecompras = cursor.fetchone()        
+    return itemlistadecompras
 
 # função para cadastrar itens da lista de compras no banco de dados
 def cadastrar_itenslistadecompras(id_listadecompras, id_produto, quantidade, valorproduto):
+    print(id_listadecompras, id_produto, quantidade, valorproduto)
     with mysql.connection.cursor() as cursor:
         cursor.execute('INSERT INTO itenslistadecompras (id_listadecompras, id_produto, quantidade, valorproduto) VALUES (%s,%s,%s,%s)', (id_listadecompras, id_produto, quantidade, valorproduto))
         mysql.connection.commit()
 
+# Rota para editar item da lista de compras no banco de dados
+def editar_itemlistadecompras(id_listadecompras, id_produto, quantidade, valor):
+    with mysql.connection.cursor() as cursor:
+        cursor.execute('UPDATE itenslistadecompras SET quantidade=%s, valorproduto=%s WHERE ID_ListadeCompras=%s AND ID_Produto=%s', (quantidade, valor, id_listadecompras, id_produto))
+        mysql.connection.commit()
+
 def get_produtositens():
     with mysql.connection.cursor() as cursor:
-        cursor.execute('SELECT DESCRICAO FROM produto')
+        cursor.execute('SELECT ID, DESCRICAO FROM produto')
         result = cursor.fetchall()
 
         products = []
         if len(result) > 0:
-            products = [row['DESCRICAO'] for row in result]
+            for row in result:
+                product = {
+                    'ID': row['ID'],
+                    'DESCRICAO': row['DESCRICAO']
+                    }
+                products.append(product)
 
     return products

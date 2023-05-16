@@ -12,7 +12,7 @@ from database import (mysql,
                       get_estabelecimentos, get_cidades, get_estabelecimento_por_id, cadastrar_estabelecimento, editar_estabelecimento, excluir_estabelecimento,
                       get_formasdepagamento, get_formadepagamento_por_id, cadastrar_formadepagamento, editar_formadepagamento, excluir_formadepagamento,
                       get_listasdecompras, get_listadecompras_por_id, cadastrar_listadecompras, editar_listadecompras, excluir_listadecompras,
-                      get_itenslistadecompras_por_id_listadecompras, cadastrar_itenslistadecompras, get_produtositens)
+                      get_itenslistadecompras_por_id_listadecompras, cadastrar_itenslistadecompras, get_produtositens, editar_itemlistadecompras, get_itemlistadecompras_por_ids)
 
 app = Flask(__name__)
 
@@ -454,14 +454,45 @@ def excluir_listadecompras_route(id):
 def get_products():
     search = request.args.get('search')
     products = get_produtositens()
-    print(products)
     
     # Filtragem de produtos de acordo com o termo de busca
     if search:
-        filtered_products = [product for product in products if search.lower() in product.lower()]
+        filtered_products = [product for product in products if search.lower() in product['DESCRICAO'].lower()]
         return jsonify(filtered_products)
     else:
         return jsonify(products)
+    
+@app.route('/itenslistadecompras/<int:id_lista>', methods=['GET', 'POST'])
+def itens_listadecompras(id_lista):
+    if request.method == 'GET':
+        itenslistadecompras = get_itenslistadecompras_por_id_listadecompras(id_lista)
+        # Código para processar a página "itenslistadecompras.html" com o ID da lista
+        return render_template('itenslistadecompras.html', id_lista=id_lista, itenslistadecompras=itenslistadecompras, total_items=len(itenslistadecompras))
+    elif request.method == 'POST':
+        cadastrar_itenslistadecompras(id_lista,request.form['id_produto'],request.form['quantidade'],request.form['valorproduto'])
+    return redirect(url_for('itens_listadecompras', id_lista=id_lista))
 
+# Rota para editar itens da lista de compras no banco de dados
+@app.route('/itenslistadecompras/<int:id_lista>/<int:id_produto>/editar', methods=['GET', 'POST'])
+def editar_itemlistadecompras_route(id_lista, id_produto):
+    if request.method == 'GET':
+        # Busca o lista de compras com o id informado no banco de dados
+        itemlistadecompras = get_itemlistadecompras_por_ids(id_lista, id_produto)
+        #Preparar dados do item para exibição
+        item_data = {
+            'id_listadecompras': itemlistadecompras['ID_LISTA'],
+            'id_produto': itemlistadecompras['ID_PRODUTO'],
+            'quantidade': itemlistadecompras['QUANTIDADE'],
+            'valor': itemlistadecompras['VALORPRODUTO']
+        }
+
+        itenslistadecompras = get_itenslistadecompras_por_id_listadecompras(id_lista)
+
+        # Renderiza o template de edição de lista de compras com os dados da subcategoria encontrada
+        return render_template('itenslistadecompras.html', item_edit=item_data, itenslistadecompras=itenslistadecompras)
+    elif request.method == 'POST':
+        editar_itemlistadecompras(id_lista, request.form['id_produto_edit'], request.form['quantidade_edit'], request.form['valor_edit'])
+        return redirect(url_for('itens_listadecompras'))
+        
 if __name__ == '__main__':
     app.run(debug=True) 

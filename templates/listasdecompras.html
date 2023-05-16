@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,6 +24,7 @@
 </head>
 
 <body>
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="{{ url_for('home') }}">Control Home</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -60,11 +62,6 @@
     </nav>
 
     <div class="container mt-4">
-        <label for="firstName" class="form-label">Produto</label>
-                                    <input type="text" name="item" class="form-control" id="product-input"
-                                        placeholder="" value="" required>
-                                    <ul id="products-list" class="list-group"></ul>
-                                    <div class="invalid-feedback">Produto é obrigatório</div>
         <div class="row g-5" id="div-listar">
             <div class="col-md-12">
                 {% if not item_edit %}
@@ -100,7 +97,7 @@
                             <td>{{ listadecompras.VALORCOMPRA }}</td>
                             <td class="align-items-end mb-lg-5">
                                 <form action="/listasdecompras/{{ listadecompras.ID }}/editar" method="GET">
-                                    <button type="submit" class="btn btn-primary btn-sm">Editar</button>
+                                    <button type="submit" class="btn btn-primary btn-sm" id="btnEditar">Editar</button>
                                 </form>
                             </td>
                             <td class="align-items-end mb-3">
@@ -157,11 +154,11 @@
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary">Cadastrar</button>
-                    <button type="submit" class="btn btn-danger" id="botao-cancelar">Cancelar</button>
+                    <a class="btn btn-danger" href="{{ url_for('listar_listasdecompras') }}">Cancelar</a>
                 </form>
             </div>
         </div>
-
+        
         {% if item_edit %}
         <div id="div-alterar">
             <div class="row g-5">
@@ -225,102 +222,25 @@
                     </div>
                 </div>
                 <p></p>
-                <div class="row g-5">
-                    <div class="col-md-5">
-                        <h4 class="mb-3">Incluir produto na lista</h4>
-                        <form method="POST" class="needs-validation" novalidate>
-                            <div class="row g-3">
-                                <div class="col-sm-12">
-                                    <label for="produto" class="form-label">Produto</label>
-                                    <input type="text" name="item2" class="form-control" id="product-input2"
-                                        placeholder="" value="" required>
-                                    <ul id="products-list2" class="list-group"></ul>
-                                    <div class="invalid-feedback">Produto é obrigatório</div>
-                                </div>
-                            </div>
-                            <div class="row g-3">
-                                <div class="col-sm-6">
-                                    <label for="lastName" class="form-label">Quantidade</label>
-                                    <input type="text" name="quantity" class="form-control" placeholder="" value=""
-                                        required>
-                                    <div class="invalid-feedback">Quantidade é obrigatória.</div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <label for="lastName" class="form-label">Valor</label>
-                                    <input type="text" name="valor" class="form-control" placeholder="" value="">
-                                </div>
-                            </div>
-                            <hr class="my-4">
-                            <button class="w-100 btn btn-primary btn-lg" type="submit">Adicionar Produto</button>
-                            <p></p>
-                    </div>
-                    {% if itenslistadecompras %}
-                    <div class="col-md-5 col-lg-5 order-md-last">
-                        <h4 class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-primary">Itens da lista</span>
-                            <span class="badge bg-primary rounded-pill">{{ total_items }}</span>
-                        </h4>
-
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Produto</th>
-                                    <th scope="col">QTD</th>
-                                    <th scope="col">Valor</th>
-                                    <th scope="col"></th>
-                                    <th scope="col"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in itenslistadecompras %}
-                                <tr>
-                                    <td align="center">{{ item['PRODUTO'] }}</td>
-                                    <td align="center">{{ item['QUANTIDADE'] }}</td>
-                                    <td align="center">{{ item['VALORPRODUTO'] }}</td>
-                                    <td>
-                                        <form method="GET" action="{{ url_for('edit_item', item_id=item['id']) }}">
-                                            <button class="btn btn-primary btn-sm">Editar</button>
-                                        </form>
-                                    </td>
-                                    <td>
-                                        <form method="GET" action="{{ url_for('delete_item', item_id=item['id']) }}">
-                                            <button class="btn btn-primary btn-sm">Excluir</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% endif %}
-                </div>
                 <button type="submit" class="btn btn-primary">Salvar</button>
                 <a class="btn btn-danger" href="{{ url_for('listar_listasdecompras') }}">Cancelar</a>
+                <!-- <button type="submit" class="btn btn-outline-warning" href="{{ url_for('listar_listasdecompras') }}">Itens lista</button> -->
+                <a class="btn btn-outline-warning" href="{{ url_for('itens_listadecompras', id_lista=item_edit['id']) }}">Itens lista</a>
+                <p></p>
             </form>
         </div>
+        {% endif %}
     </div>
-    {% endif %}
-    </div>
-
-    <!-- Links JS -->
-
 
     <script>
         var botaoIncluir = document.getElementById("botao-incluir");
-        var botaoCancelar = document.getElementById("botao-cancelar");
         var divIncluir = document.getElementById("div-incluir");
         var divListar = document.getElementById("div-listar");
-
+        
         botaoIncluir.addEventListener("click", function () {
             divListar.style.display = "none"
             divIncluir.style.display = "block";
             botaoIncluir.style.display = "none"
-        });
-
-        botaoCancelar.addEventListener("click", function () {
-            divListar.style.display = "block"
-            divIncluir.style.display = "none";
-            botaoIncluir.style.display = "block"
         });
 
         $("#input-pesquisa").on("keyup", function () {
@@ -340,12 +260,12 @@
 
         $(document).ready(function () {
             function updateProductsList(products) {
-                var $list = $('ul#products-list2');
+                var $list = $('ul#products-list');
                 $list.empty();
                 $.each(products, function (i, product) {
                     var $li = $('<li>').text(product).addClass('list-group-item');
                     $li.click(function () {
-                        $('input#product-input2').val(product);
+                        $('input#product-input').val(product);
                         $list.empty();
                     });
                     $list.append($li);
@@ -365,11 +285,11 @@
             }
 
             function selectProduct(product) {
-                $('#product-input2').val(product);
+                $('#product-input').val(product);
             }
 
             // Configuração do campo de entrada para autocomplete
-            var $input = $('input#product-input2');
+            var $input = $('input#product-input');
             $input.on('input', function () {
                 searchProducts($(this).val());
             });
