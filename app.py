@@ -450,6 +450,7 @@ def excluir_listadecompras_route(id):
     excluir_listadecompras(id)    
     return redirect(url_for('listar_listasdecompras'))
 
+# Rota para carregar produtos no combobox do banco de dados
 @app.route('/products')
 def get_products():
     search = request.args.get('search')
@@ -482,8 +483,9 @@ def editar_itemlistadecompras_route(id_lista, id_produto):
         item_data = {
             'id_listadecompras': itemlistadecompras['ID_LISTA'],
             'id_produto': itemlistadecompras['ID_PRODUTO'],
+            'produto': itemlistadecompras['PRODUTO'],
             'quantidade': itemlistadecompras['QUANTIDADE'],
-            'valor': itemlistadecompras['VALORPRODUTO']
+            'valorproduto': itemlistadecompras['VALORPRODUTO']
         }
 
         itenslistadecompras = get_itenslistadecompras_por_id_listadecompras(id_lista)
@@ -491,8 +493,8 @@ def editar_itemlistadecompras_route(id_lista, id_produto):
         # Renderiza o template de edição de lista de compras com os dados da subcategoria encontrada
         return render_template('itenslistadecompras.html', item_edit=item_data, itenslistadecompras=itenslistadecompras)
     elif request.method == 'POST':
-        editar_itemlistadecompras(id_lista, request.form['id_produto_edit'], request.form['quantidade_edit'], request.form['valor_edit'])
-        return redirect(url_for('itens_listadecompras'))
+        editar_itemlistadecompras(id_lista, request.form['id_produto_novo_edit'], request.form['id_produto_edit'], request.form['quantidade_edit'], request.form['valorproduto_edit'])
+        return redirect(url_for('itens_listadecompras', id_lista=id_lista))
         
 if __name__ == '__main__':
     app.run(debug=True) 

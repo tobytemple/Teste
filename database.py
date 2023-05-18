@@ -367,7 +367,10 @@ def get_itenslistadecompras_por_id_listadecompras(id_listadecompras):
 # função para buscar um item da lista de compras específica
 def get_itemlistadecompras_por_ids(id_lista, id_produto):
     with mysql.connection.cursor() as cursor:
-        cursor.execute('SELECT ILC.ID_ListadeCompras AS ID_LISTA, ILC.ID_PRODUTO, ILC.QUANTIDADE, ILC.VALORPRODUTO FROM itenslistadecompras ILC WHERE ID_ListadeCompras=%s AND ID_Produto=%s', (id_lista,id_produto,))
+        cursor.execute('SELECT ILC.ID_ListadeCompras AS ID_LISTA, ILC.ID_Produto AS ID_PRODUTO, P.DESCRICAO AS PRODUTO, ILC.QUANTIDADE, ILC.VALORPRODUTO '
+                       'FROM itenslistadecompras ILC '
+                       'INNER JOIN produto P ON ILC.ID_Produto = P.ID '
+                       'WHERE ID_ListadeCompras=%s AND ID_Produto=%s', (id_lista,id_produto,))
         itemlistadecompras = cursor.fetchone()        
     return itemlistadecompras
 
@@ -379,9 +382,10 @@ def cadastrar_itenslistadecompras(id_listadecompras, id_produto, quantidade, val
         mysql.connection.commit()
 
 # Rota para editar item da lista de compras no banco de dados
-def editar_itemlistadecompras(id_listadecompras, id_produto, quantidade, valor):
+def editar_itemlistadecompras(id_listadecompras, id_produto, id_produto_novo, quantidade, valor):
     with mysql.connection.cursor() as cursor:
-        cursor.execute('UPDATE itenslistadecompras SET quantidade=%s, valorproduto=%s WHERE ID_ListadeCompras=%s AND ID_Produto=%s', (quantidade, valor, id_listadecompras, id_produto))
+        print(id_listadecompras, id_produto, id_produto_novo, quantidade, valor)
+        cursor.execute('UPDATE itenslistadecompras SET ID_Produto=%s, quantidade=%s, valorproduto=%s WHERE ID_ListadeCompras=%s AND ID_Produto=%s', (id_produto_novo, quantidade, valor, id_listadecompras, id_produto))
         mysql.connection.commit()
 
 def get_produtositens():

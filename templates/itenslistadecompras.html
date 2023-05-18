@@ -105,23 +105,22 @@
                 {% endif %}
             </div>
         </div>
-        <p></p>
         <div class="row g-5">
             <div class="col-md-10">
                 <hr class="my-4">
             </div>
         </div>
-        </p>
         <form method="POST">
+            {% if not item_edit %}
             <div class="row g-5">
-                <div class="col-sm-5">
-                    <input type="hidden" name="id_produto" id="id_produto" value="">
+                <div class="col-sm-4">
+                    <input type="hidden" name="id_produto" id="id_produto" value="">  
                     <input type="text" name="produto" class="form-control" id="product-input" placeholder="Produto"
                         value="">
                     <ul id="products-list" class="list-group"></ul>
                 </div>
-                <div class="col-sm-2">
-                    <input type="text" name="quantidade" class="form-control" placeholder="Quantidade" value="">
+                <div class="col-sm-1">
+                    <input type="text" name="quantidade" class="form-control" placeholder="Qtd" value="">
                 </div>
                 <div class="col-sm-2">
                     <input type="text" name="valorproduto" class="form-control" placeholder="Valor Produto" value="">
@@ -130,6 +129,32 @@
                     <button class="w-25 btn btn-primary btn-info" type="submit">+</button>
                 </div>
             </div>
+            <p></p>
+            <form action="/listasdecompras/{{ id_lista }}/editar" method="GET">
+                <button type="submit" class="btn btn-outline-warning" id="btnVoltar">voltar</button>
+            </form>
+            {% endif %}
+            {% if item_edit %}
+            <div class="row g-5">
+                <div class="col-sm-4">
+                    <input type="hidden" name="id_produto_edit" id="id_produto" value="{{ item_edit['id_produto'] }}">
+                    <input type="hidden" name="id_produto_novo_edit" id="id_produto_novo" value="{{ item_edit['id_produto'] }}">  
+                    <input type="text" name="produto_edit" class="form-control" id="product-input" placeholder="Produto"
+                    value="{{ item_edit['produto'] }}">
+                    <ul id="products-list" class="list-group"></ul>
+                </div>
+                <div class="col-sm-1">
+                    <input type="text" name="quantidade_edit" class="form-control" placeholder="Qtd" value="{{ item_edit['quantidade'] }}">
+                </div>
+                <div class="col-sm-2">
+                    <input type="text" name="valorproduto_edit" class="form-control" placeholder="Valor Produto" value="{{ item_edit['valorproduto'] }}">
+                </div>
+                <div class="col-sm-3">
+                    <button class="w-50 btn btn-primary btn-info" type="submit">Atualizar</button>
+                    <a class="btn btn-danger" href="{{ url_for('itens_listadecompras', id_lista=item_edit['id_listadecompras']) }}">Cancelar</a>
+                </div>
+            </div>
+            {% endif %}
         </form>
         <p></p>
     </div>
