@@ -327,6 +327,10 @@ def get_listasdecompras():
         cursor.execute('SELECT LC.ID, LC.DESCRICAO, E.NOME AS ESTABELECIMENTO, LC.DATACOMPRA, LC.VALORCOMPRA FROM listadecompras LC '
                        'INNER JOIN estabelecimento E ON LC.ID_Estabelecimento = E.ID ORDER BY LC.DATACOMPRA DESC')
         listasdecompras = cursor.fetchall()
+
+        # Formatar a data no formato "DD/MM/YYYY"
+        for lista in listasdecompras:
+            lista['DATACOMPRA'] = lista['DATACOMPRA'].strftime('%d/%m/%Y')
     return listasdecompras
 
 # função para buscar uma lista de compras específica
@@ -341,6 +345,7 @@ def cadastrar_listadecompras(descricao, id_estabelecimento, nrocupomfiscal, data
     with mysql.connection.cursor() as cursor:
         cursor.execute('INSERT INTO listadecompras (descricao, id_estabelecimento, nrocupomfiscal, datacompra, valorcompra, id_formadepagamento) VALUES (%s,%s,%s,%s,%s,%s)', (descricao, id_estabelecimento, nrocupomfiscal, datacompra, valorcompra, id_formadepagamento))
         mysql.connection.commit()
+        return cursor.lastrowid
 
 # Rota para editar lista de compras no banco de dados
 def editar_listadecompras(id, descricao, id_estabelecimento, nrocupomfiscal, datacompra, valorcompra, id_formadepagamento):
@@ -357,10 +362,12 @@ def excluir_listadecompras(id):
 # função para buscar itens da lista de compras no banco
 def get_itenslistadecompras_por_id_listadecompras(id_listadecompras):
     with mysql.connection.cursor() as cursor:
-        cursor.execute('SELECT ILC.ID_ListadeCompras AS ID_LISTA, ILC.ID_Produto AS ID_PRODUTO, P.DESCRICAO AS PRODUTO, ILC.QUANTIDADE, ILC.VALORPRODUTO '
+        cursor.execute('SELECT ILC.ID_ListadeCompras AS ID_LISTA, ILC.ID_Produto AS ID_PRODUTO, P.DESCRICAO AS PRODUTO, ILC.QUANTIDADE, ILC.VALORPRODUTO, '
+                       'ILC.QUANTIDADE * ILC.VALORPRODUTO AS VALORTOTALITEM, '
+                       '(SELECT SUM(ILC.QUANTIDADE * ILC.VALORPRODUTO) FROM itenslistadecompras ILC WHERE ILC.ID_ListadeCompras = %s) AS VALORTOTALCOMPRA '
                        'FROM itenslistadecompras ILC '
                        'INNER JOIN produto P ON ILC.ID_Produto = P.ID '
-                       ' WHERE ILC.ID_ListadeCompras = %s ORDER BY P.DESCRICAO DESC', (id_listadecompras,))
+                       ' WHERE ILC.ID_ListadeCompras = %s ORDER BY P.DESCRICAO DESC', (id_listadecompras,id_listadecompras,))
         itenslistadecompras = cursor.fetchall()
     return itenslistadecompras
 
@@ -376,7 +383,6 @@ def get_itemlistadecompras_por_ids(id_lista, id_produto):
 
 # função para cadastrar itens da lista de compras no banco de dados
 def cadastrar_itenslistadecompras(id_listadecompras, id_produto, quantidade, valorproduto):
-    print(id_listadecompras, id_produto, quantidade, valorproduto)
     with mysql.connection.cursor() as cursor:
         cursor.execute('INSERT INTO itenslistadecompras (id_listadecompras, id_produto, quantidade, valorproduto) VALUES (%s,%s,%s,%s)', (id_listadecompras, id_produto, quantidade, valorproduto))
         mysql.connection.commit()
@@ -386,6 +392,12 @@ def editar_itemlistadecompras(id_listadecompras, id_produto, id_produto_novo, qu
     with mysql.connection.cursor() as cursor:
         print(id_listadecompras, id_produto, id_produto_novo, quantidade, valor)
         cursor.execute('UPDATE itenslistadecompras SET ID_Produto=%s, quantidade=%s, valorproduto=%s WHERE ID_ListadeCompras=%s AND ID_Produto=%s', (id_produto_novo, quantidade, valor, id_listadecompras, id_produto))
+        mysql.connection.commit()
+
+# Rota para excluir item da lista de compras no banco de dados
+def excluir_itemlistadecompras(id_listadecompras, id_produto):
+    with mysql.connection.cursor() as cursor:
+        cursor.execute('DELETE FROM itenslistadecompras WHERE ID_ListadeCompras = %s AND ID_Produto = %s', (id_listadecompras,id_produto,))
         mysql.connection.commit()
 
 def get_produtositens():

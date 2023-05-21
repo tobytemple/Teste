@@ -12,7 +12,7 @@ from database import (mysql,
                       get_estabelecimentos, get_cidades, get_estabelecimento_por_id, cadastrar_estabelecimento, editar_estabelecimento, excluir_estabelecimento,
                       get_formasdepagamento, get_formadepagamento_por_id, cadastrar_formadepagamento, editar_formadepagamento, excluir_formadepagamento,
                       get_listasdecompras, get_listadecompras_por_id, cadastrar_listadecompras, editar_listadecompras, excluir_listadecompras,
-                      get_itenslistadecompras_por_id_listadecompras, cadastrar_itenslistadecompras, get_produtositens, editar_itemlistadecompras, get_itemlistadecompras_por_ids)
+                      get_itenslistadecompras_por_id_listadecompras, cadastrar_itenslistadecompras, get_produtositens, editar_itemlistadecompras, get_itemlistadecompras_por_ids, excluir_itemlistadecompras)
 
 app = Flask(__name__)
 
@@ -416,14 +416,13 @@ def listar_listasdecompras():
 @app.route('/listasdecompras/novo', methods=['POST'])
 def cadastrar_listadecompras_route():
     if request.method == "POST":
-        cadastrar_listadecompras(request.form['descricao'], request.form['estabelecimento'], request.form['nrocupomfiscal'], request.form['datacompra'], request.form['valorcompra'], request.form['formadepagamento'])    
-    return redirect(url_for('listar_listasdecompras'))
+       id_lista = cadastrar_listadecompras(request.form['descricao'], request.form['estabelecimento'], request.form['nrocupomfiscal'], datetime.strptime(request.form['datacompra'], '%d/%m/%Y').strftime('%Y-%m-%d'), 0, request.form['formadepagamento'])    
+    return redirect(url_for('itens_listadecompras', id_lista=id_lista))
 
 # Rota para editar lista de compras no banco de dados
 @app.route('/listasdecompras/<int:id>/editar', methods=['GET', 'POST'])
 def editar_listadecompras_route(id):
     if request.method == 'GET':
-        print('passei aqui')
         # Busca o lista de compras com o id informado no banco de dados
         listadecompras = get_listadecompras_por_id(id)
         #Preparar dados do item para exibição
@@ -432,7 +431,7 @@ def editar_listadecompras_route(id):
             'descricao': listadecompras['DESCRICAO'],
             'estabelecimento': listadecompras['ID_Estabelecimento'],
             'nrocupomfiscal': listadecompras['NROCUPOMFISCAL'],
-            'datacompra': listadecompras['DATACOMPRA'],
+            'datacompra': listadecompras['DATACOMPRA'].strftime('%d/%m/%Y'),
             'valorcompra': listadecompras['VALORCOMPRA'],
         }
 
@@ -471,13 +470,15 @@ def itens_listadecompras(id_lista):
         # Código para processar a página "itenslistadecompras.html" com o ID da lista
         return render_template('itenslistadecompras.html', id_lista=id_lista, itenslistadecompras=itenslistadecompras, total_items=len(itenslistadecompras))
     elif request.method == 'POST':
-        cadastrar_itenslistadecompras(id_lista,request.form['id_produto'],request.form['quantidade'],request.form['valorproduto'])
+        valor_produto = request.form['valorproduto']
+        if not valor_produto:
+            valor_produto = 0
+        cadastrar_itenslistadecompras(id_lista,request.form['id_produto'],request.form['quantidade'],valor_produto)
     return redirect(url_for('itens_listadecompras', id_lista=id_lista))
 
 # Rota para editar itens da lista de compras no banco de dados
 @app.route('/itenslistadecompras/<int:id_lista>/<int:id_produto>/editar', methods=['GET', 'POST'])
 def editar_itemlistadecompras_route(id_lista, id_produto):
-    print('passei aqui tb')
     if request.method == 'GET':
         # Busca o lista de compras com o id informado no banco de dados
         itemlistadecompras = get_itemlistadecompras_por_ids(id_lista, id_produto)
@@ -498,5 +499,12 @@ def editar_itemlistadecompras_route(id_lista, id_produto):
         editar_itemlistadecompras(id_lista, request.form['id_produto_novo_edit'], request.form['id_produto_edit'], request.form['quantidade_edit'], request.form['valorproduto_edit'])
         return redirect(url_for('itens_listadecompras', id_lista=id_lista))
         
+# Rota para excluir item da lista de compras no banco de dados
+@app.route('/itenslistadecompras/<int:id_lista>/<int:id_produto>/excluir', methods=['GET', 'POST'])
+def excluir_itemlistadecompras_route(id_lista, id_produto):
+    print(id_lista, id_produto)
+    excluir_itemlistadecompras(id_lista, id_produto)    
+    return redirect(url_for('itens_listadecompras', id_lista=id_lista))
+
 if __name__ == '__main__':
     app.run(debug=True) 

@@ -13,7 +13,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+        integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <style>
         .table-actions {
@@ -78,7 +81,6 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col">ID</th>
                             <th scope="col">Descricao</th>
                             <th scope="col">Estabelecimento</th>
                             <th scope="col">Data Compra</th>
@@ -90,7 +92,6 @@
                     <tbody>
                         {% for listadecompras in listasdecompras %}
                         <tr>
-                            <td>{{ listadecompras.ID }}</td>
                             <td>{{ listadecompras.DESCRICAO }}</td>
                             <td>{{ listadecompras.ESTABELECIMENTO }}</td>
                             <td>{{ listadecompras.DATACOMPRA }}</td>
@@ -139,11 +140,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="datacompra" class="form-label">Data Compra</label>
-                        <input type="text" class="form-control" id="datacompra" name="datacompra" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="valorcompra" class="form-label">Valor Compra</label>
-                        <input type="text" class="form-control" id="valorcompra" name="valorcompra" required>
+                        <input type="text" class="form-control datepicker" id="datacompra" name="datacompra" required>
                     </div>
                     <div class="mb-3">
                         <label for="formadepagamento" class="form-label">Forma de Pagamento</label>
@@ -158,7 +155,7 @@
                 </form>
             </div>
         </div>
-        
+
         {% if item_edit %}
         <div id="div-alterar">
             <div class="row g-5">
@@ -197,7 +194,7 @@
                     </div>
                     <div class="col-md-5">
                         <label for="datacompra" class="form-label">Data Compra</label>
-                        <input type="text" name="datacompra_edit" id="datacompra_edit" class="form-control"
+                        <input type="text" name="datacompra_edit" id="datacompra_edit" class="form-control datepicker"
                             value="{{ item_edit['datacompra'] }}" required>
                     </div>
                 </div>
@@ -224,7 +221,6 @@
                 <p></p>
                 <button type="submit" class="btn btn-primary">Salvar</button>
                 <a class="btn btn-danger" href="{{ url_for('listar_listasdecompras') }}">Cancelar</a>
-                <!-- <button type="submit" class="btn btn-outline-warning" href="{{ url_for('listar_listasdecompras') }}">Itens lista</button> -->
                 <a class="btn btn-outline-warning" href="{{ url_for('itens_listadecompras', id_lista=item_edit['id']) }}">Itens lista</a>
                 <p></p>
             </form>
@@ -232,11 +228,35 @@
         {% endif %}
     </div>
 
+    <!-- Link to Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"
+        integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('.datepicker').datepicker({
+                format: 'dd/mm/yyyy',
+                language: 'pt-BR'
+            });
+        });
+    </script>
+
     <script>
         var botaoIncluir = document.getElementById("botao-incluir");
         var divIncluir = document.getElementById("div-incluir");
         var divListar = document.getElementById("div-listar");
-        
+
         botaoIncluir.addEventListener("click", function () {
             divListar.style.display = "none"
             divIncluir.style.display = "block";
