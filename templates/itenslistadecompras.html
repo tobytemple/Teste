@@ -130,9 +130,13 @@
                 </div>
             </div>
             <p></p>
-            <form action="/listasdecompras/{{ id_lista }}/editar" method="GET">
-                <button type="submit" class="btn btn-outline-warning" id="btnVoltar">voltar</button>
+            <form action="{{ url_for('editar_listadecompras_route', id=id_lista) }}" method="GET">
+                <!-- Restante do seu formulário -->
+                <button id="btnVoltar" class="btn btn-primary" type="submit">Voltar</button>
             </form>
+            <!-- <form action="/listasdecompras/{{ id_lista }}/editar" method="GET">
+                <button type="submit" class="btn btn-outline-warning" id="btnVoltar">voltar</button>
+            </form> -->
             {% endif %}
             {% if item_edit %}
             <div class="row g-5">

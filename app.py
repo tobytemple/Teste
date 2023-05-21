@@ -423,6 +423,7 @@ def cadastrar_listadecompras_route():
 @app.route('/listasdecompras/<int:id>/editar', methods=['GET', 'POST'])
 def editar_listadecompras_route(id):
     if request.method == 'GET':
+        print('passei aqui')
         # Busca o lista de compras com o id informado no banco de dados
         listadecompras = get_listadecompras_por_id(id)
         #Preparar dados do item para exibição
@@ -476,6 +477,7 @@ def itens_listadecompras(id_lista):
 # Rota para editar itens da lista de compras no banco de dados
 @app.route('/itenslistadecompras/<int:id_lista>/<int:id_produto>/editar', methods=['GET', 'POST'])
 def editar_itemlistadecompras_route(id_lista, id_produto):
+    print('passei aqui tb')
     if request.method == 'GET':
         # Busca o lista de compras com o id informado no banco de dados
         itemlistadecompras = get_itemlistadecompras_por_ids(id_lista, id_produto)
